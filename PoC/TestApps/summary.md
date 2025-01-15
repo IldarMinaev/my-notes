@@ -17,15 +17,15 @@ The next table represents the results of test application research:
 | Easy k8s deploy |  | [Helm](https://github.com/saveourtool/save-cloud/tree/f651465b403a89bf34cde9af973d318cfd11cffb/save-cloud-charts/save-cloud) | `scaffold run` | docker-compose only |  |  |
 | Complex busines logic |  |  |  |  |  |  |
 | Easy to extend |  |  |  |  |  |  |
-| Java Quarkus |  | ➖ |  |  |  |  |
-| Java Springboot |  | ➕ |  |  |  |  |
-| Golang |  | ➖ |  |  |  |  |
-| Python |  | ➖ |  |  |  |  |
-| Kafka |  | ➕ |  |  |  |  |
-| RabbitMQ | | ➖  |  |  |  |  |
-| PostgreSQL | | ➖ |  |  |  |  |
-| Cassandra | | ➖ |  |  |  |  |
-| MongoDB |  | ➖ |  |  |  |  |
-| OpenSearch |  | ➖ |  |  |  |  |
-| REST |  | ➕ |  |  |  |  |
-| gRPC |  | ➖ |  |  |  |  |
+| Java Quarkus |  | ➖ | ➖ |  |  |  |
+| Java Springboot |  | ➕ | ➖ |  |  |  |
+| Golang |  | ➖ | ➕ |  |  |  |
+| Python |  | ➖ | ➕ |  |  |  |
+| Kafka |  | ➕ | ➖ |  |  |  |
+| RabbitMQ | | ➖  | ➖ |  |  |  |
+| PostgreSQL | | ➖ | ➖ |  |  |  |
+| Cassandra | | ➖ | ➖ |  |  |  |
+| MongoDB |  | ➖ | ➖ |  |  |  |
+| OpenSearch |  | ➖ | ➖ |  |  |  |
+| REST |  | ➕ | ❓ |  |  |  |
+| gRPC |  | ➖ | ➕ |  |  |  |
