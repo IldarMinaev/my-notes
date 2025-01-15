@@ -1,0 +1,4 @@
+- [ ] Check [https://aws-otel.github.io/](https://aws-otel.github.io/)
+- [ ] Check [https://kubevela.io/docs/platform-engineers/operations/observability/](https://kubevela.io/docs/platform-engineers/operations/observability/)
+- [ ] open application model - [https://github.com/oam-dev/spec](https://github.com/oam-dev/spec)
+- [ ] 
