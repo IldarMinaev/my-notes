@@ -14,7 +14,7 @@ The next table represents the results of test application research:
 
 | **App name** | [ftgo](https://github.com/microservices-patterns/ftgo-application) | [save](https://github.com/saveourtool/save-cloud) | [Google ms-demo](https://github.com/GoogleCloudPlatform/microservices-demo) | [cool-tools](https://github.com/Zhykos/cool-tools) | [magda](https://github.com/magda-io/magda) | [robot-shop](https://github.com/instana/robot-shop) |
 |---|---|---|---|---|---|---|
-| Easy k8s deploy |  | [Helm](https://github.com/saveourtool/save-cloud/tree/f651465b403a89bf34cde9af973d318cfd11cffb/save-cloud-charts/save-cloud) | `scaffold run` | docker-compose only |  |  |
+| Easy k8s deploy |  | [Helm](https://github.com/saveourtool/save-cloud/tree/f651465b403a89bf34cde9af973d318cfd11cffb/save-cloud-charts/save-cloud) | `scaffold run` | docker-compose only |  | Helm |
 | Complex busines logic |  |  |  |  |  |  |
 | Easy to extend |  |  |  |  |  |  |
 | Java Quarkus |  | ➖ | ➖ |  |  | ➖ |
