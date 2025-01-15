@@ -26,6 +26,7 @@ The next table represents the results of test application research:
 | PostgreSQL | | ➖ | ➖ |  |  |  |
 | MySQL | | ➕ | ➖ |  |  |  |
 | Neo4j | | ➕ | ➖ |  |  |  |
+| Redis | | ➖ | ➕ |  |  |  |
 | Cassandra | | ➖ | ➖ |  |  |  |
 | MongoDB |  | ➖ | ➖ |  |  |  |
 | OpenSearch |  | ➖ | ➖ |  |  |  |
