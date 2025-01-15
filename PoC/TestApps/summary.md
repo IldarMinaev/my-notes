@@ -24,6 +24,8 @@ The next table represents the results of test application research:
 | Kafka |  | ➕ | ➖ |  |  |  |
 | RabbitMQ | | ➖  | ➖ |  |  |  |
 | PostgreSQL | | ➖ | ➖ |  |  |  |
+| MySQL | | ➕ | ➖ |  |  |  |
+| Neo4j | | ➕ | ➖ |  |  |  |
 | Cassandra | | ➖ | ➖ |  |  |  |
 | MongoDB |  | ➖ | ➖ |  |  |  |
 | OpenSearch |  | ➖ | ➖ |  |  |  |
