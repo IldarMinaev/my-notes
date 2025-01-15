@@ -18,7 +18,7 @@ The next table represents the results of test application research:
 | Complex busines logic |  |  |  |  |  |  |
 | Easy to extend |  |  |  |  |  |  |
 | Java Quarkus |  | ➖ | ➖ |  |  | ➖ |
-| Java Springboot |  | ➕ | ➖ |  |  | ➖ |
+| Java Springboot |  | ➕ | ➖ |  |  | ➕ |
 | Golang |  | ➖ | ➕ |  |  | ➕ |
 | Python |  | ➖ | ➕ |  |  | ➕ |
 | Kafka |  | ➕ | ➖ |  |  | ➖ |
