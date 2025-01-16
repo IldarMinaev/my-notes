@@ -15,23 +15,23 @@ The next table represents the results of test application research:
 | **App name** | [ftgo](https://github.com/microservices-patterns/ftgo-application) | [save](https://github.com/saveourtool/save-cloud) | [Google ms-demo](https://github.com/GoogleCloudPlatform/microservices-demo) | [cool-tools](https://github.com/Zhykos/cool-tools) | [magda](https://github.com/magda-io/magda) | [robot-shop](https://github.com/instana/robot-shop) |
 |---|---|---|---|---|---|---|
 | Easy k8s deploy |  | [Helm](https://github.com/saveourtool/save-cloud/tree/f651465b403a89bf34cde9af973d318cfd11cffb/save-cloud-charts/save-cloud) | `scaffold run` | docker-compose only | Helm | Helm |
-| Complex busines logic |  |  |  |  | ➕ |  |
+| Complex busines logic | [PR151](https://github.com/microservices-patterns/ftgo-application/pull/151), [apply -f](https://github.com/microservices-patterns/ftgo-application?tab=readme-ov-file#deploying-services) |  |  |  | ➕ |  |
 | Easy to extend |  |  |  |  | ➕ |  |
-| Java Quarkus |  | ➖ | ➖ |  | ➖ | ➖ |
-| Java Springboot |  | ➕ | ➖ |  | ➖ | ➕ |
-| Golang |  | ➖ | ➕ |  | ➖ | ➕ |
-| Python |  | ➖ | ➕ |  | ➖ | ➕ |
-| Kafka |  | ➕ | ➖ |  | ➖ | ➖ |
-| RabbitMQ | | ➖  | ➖ |  | ➖ | ➕ |
-| PostgreSQL | | ➖ | ➖ |  | ➕ | ➖ |
-| MySQL | | ➕ | ➖ |  | ➖ | ➕ |
-| Neo4j | | ➕ | ➖ |  | ➖ | ➖ |
-| Redis | | ➖ | ➕ |  | ➖ | ➕ |
-| Cassandra | | ➖ | ➖ |  | ➖ | ➖ |
-| MongoDB |  | ➖ | ➖ |  | ➖ | ➕ |
-| OpenSearch |  | ➖ | ➖ |  | ➕ | ➖ |
-| REST |  | ➕ | ❓ |  | ➕ | ➕ |
-| gRPC |  | ➖ | ➕ |  | ➖ | ➖ |
+| Java Quarkus | ➖ | ➖ | ➖ |  | ➖ | ➖ |
+| Java Springboot | ➕ | ➕ | ➖ |  | ➖ | ➕ |
+| Golang | ➖ | ➖ | ➕ |  | ➖ | ➕ |
+| Python | ➖ | ➖ | ➕ |  | ➖ | ➕ |
+| Kafka | ➕ | ➕ | ➖ |  | ➖ | ➖ |
+| RabbitMQ | ➖ | ➖  | ➖ |  | ➖ | ➕ |
+| PostgreSQL | ➖ | ➖ | ➖ |  | ➕ | ➖ |
+| MySQL | ➕ | ➕ | ➖ |  | ➖ | ➕ |
+| Neo4j | ➖ | ➕ | ➖ |  | ➖ | ➖ |
+| Redis | ➖ | ➖ | ➕ |  | ➖ | ➕ |
+| Cassandra | ➖ | ➖ | ➖ |  | ➖ | ➖ |
+| MongoDB | ➖ | ➖ | ➖ |  | ➖ | ➕ |
+| OpenSearch | ➖ | ➖ | ➖ |  | ➕ | ➖ |
+| REST | ➕ | ➕ | ❓ |  | ➕ | ➕ |
+| gRPC | ➕ | ➖ | ➕ |  | ➖ | ➖ |
 | pods count |  |  | 11 |  | 24 | 12 |
 | mem limit OOB |  |  | 3G |  | 8GB | 2.57Gi |
 | cpu limit OOB |  |  | 3 |  | 4 cores (works slow even on 16) | 2.4 cores |
