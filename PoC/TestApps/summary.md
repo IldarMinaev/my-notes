@@ -14,8 +14,8 @@ The next table represents the results of test application research:
 
 | **App name** | [ftgo](https://github.com/microservices-patterns/ftgo-application) | [save](https://github.com/saveourtool/save-cloud) | [Google ms-demo](https://github.com/GoogleCloudPlatform/microservices-demo) | [cool-tools](https://github.com/Zhykos/cool-tools) | [magda](https://github.com/magda-io/magda) | [robot-shop](https://github.com/instana/robot-shop) |
 |---|---|---|---|---|---|---|
-| Easy k8s deploy |  | [Helm](https://github.com/saveourtool/save-cloud/tree/f651465b403a89bf34cde9af973d318cfd11cffb/save-cloud-charts/save-cloud) | `scaffold run` | docker-compose only | Helm | Helm |
-| Complex busines logic | [PR151](https://github.com/microservices-patterns/ftgo-application/pull/151), [apply -f](https://github.com/microservices-patterns/ftgo-application?tab=readme-ov-file#deploying-services) |  |  |  | ➕ |  |
+| Easy k8s deploy | [PR151](https://github.com/microservices-patterns/ftgo-application/pull/151), [apply -f](https://github.com/microservices-patterns/ftgo-application?tab=readme-ov-file#deploying-services) | [Helm](https://github.com/saveourtool/save-cloud/tree/f651465b403a89bf34cde9af973d318cfd11cffb/save-cloud-charts/save-cloud) | `scaffold run` | docker-compose only | Helm | Helm |
+| Complex busines logic |  |  |  |  | ➕ |  |
 | Easy to extend |  |  |  |  | ➕ |  |
 | Java Quarkus | ➖ | ➖ | ➖ |  | ➖ | ➖ |
 | Java Springboot | ➕ | ➕ | ➖ |  | ➖ | ➕ |
