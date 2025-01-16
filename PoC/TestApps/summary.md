@@ -21,14 +21,17 @@ The next table represents the results of test application research:
 | Java Springboot |  | ➕ | ➖ |  | ➖ | ➕ |
 | Golang |  | ➖ | ➕ |  | ➖ | ➕ |
 | Python |  | ➖ | ➕ |  | ➖ | ➕ |
-| Kafka |  | ➕ | ➖ |  |  | ➖ |
-| RabbitMQ | | ➖  | ➖ |  |  | ➕ |
+| Kafka |  | ➕ | ➖ |  | ➖ | ➖ |
+| RabbitMQ | | ➖  | ➖ |  | ➖ | ➕ |
 | PostgreSQL | | ➖ | ➖ |  | ➕ | ➖ |
-| MySQL | | ➕ | ➖ |  |  | ➕ |
-| Neo4j | | ➕ | ➖ |  |  | ➖ |
-| Redis | | ➖ | ➕ |  |  | ➕ |
-| Cassandra | | ➖ | ➖ |  |  | ➖ |
-| MongoDB |  | ➖ | ➖ |  |  | ➕ |
+| MySQL | | ➕ | ➖ |  | ➖ | ➕ |
+| Neo4j | | ➕ | ➖ |  | ➖ | ➖ |
+| Redis | | ➖ | ➕ |  | ➖ | ➕ |
+| Cassandra | | ➖ | ➖ |  | ➖ | ➖ |
+| MongoDB |  | ➖ | ➖ |  | ➖ | ➕ |
 | OpenSearch |  | ➖ | ➖ |  | ➕ | ➖ |
-| REST |  | ➕ | ❓ |  |  | ➕ |
-| gRPC |  | ➖ | ➕ |  |  | ➖ |
+| REST |  | ➕ | ❓ |  | ➕ | ➕ |
+| gRPC |  | ➖ | ➕ |  | ➖ | ➖ |
+| pods count |  |  |  |  | 24 |  |
+| mem limit OOB |  |  |  |  | 8GB |  |
+| cpu limit OOB |  |  |  |  | 4 cores (works slow even on 16) |  |
