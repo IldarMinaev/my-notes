@@ -33,5 +33,5 @@ The next table represents the results of test application research:
 | REST |  | ➕ | ❓ |  | ➕ | ➕ |
 | gRPC |  | ➖ | ➕ |  | ➖ | ➖ |
 | pods count |  |  | 11 |  | 24 | 12 |
-| mem limit OOB |  |  |  |  | 8GB | 2.57Gi |
-| cpu limit OOB |  |  |  |  | 4 cores (works slow even on 16) | 2.4 cores |
+| mem limit OOB |  |  | 3G |  | 8GB | 2.57Gi |
+| cpu limit OOB |  |  | 3 |  | 4 cores (works slow even on 16) | 2.4 cores |
