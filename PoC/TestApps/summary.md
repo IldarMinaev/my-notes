@@ -30,5 +30,5 @@ The next table represents the results of test application research:
 | Cassandra | | ➖ | ➖ |  |  | ➖ |
 | MongoDB |  | ➖ | ➖ |  |  | ➕ |
 | OpenSearch |  | ➖ | ➖ |  |  | ➖ |
-| REST |  | ➕ | ❓ |  |  | ➖ |
+| REST |  | ➕ | ❓ |  |  | ➕ |
 | gRPC |  | ➖ | ➕ |  |  | ➖ |
