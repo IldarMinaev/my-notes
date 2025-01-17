@@ -1,7 +1,7 @@
 Prerequisites:
 - WSL
 - Helm
-- Rancher-desktop\
+- Rancher-desktop
 ```
 git clone  https://github.com/instana/robot-shop.git
 cd robot-shop/K8s/helm/
