@@ -12,4 +12,8 @@ If you already installed nginx-ingress-cotroller in rancher, you can try to crea
 kubectl create ingress robot-shop-web -n robot-shop --class=nginx --rule="robot-shop.demo.rancher-desktop.qubership.org/*=web:8080"
 ```
 Add a record for that dns name in hosts file to redirect it to 127.0.0.1 or install and configure local DNS to redirect all *.demo.rancher-desktop.qubership.org requests to localhost.
-    [How to setup NGIX-Ingress-Controller on rancher-desktop](https://docs.rancherdesktop.io/how-to-guides/setup-NGINX-Ingress-Controller/)
+\
+&nbsp;
+\
+&nbsp;
+[How to setup NGIX-Ingress-Controller on rancher-desktop](https://docs.rancherdesktop.io/how-to-guides/setup-NGINX-Ingress-Controller/)
