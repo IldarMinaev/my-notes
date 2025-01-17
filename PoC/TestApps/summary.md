@@ -32,6 +32,6 @@ The next table represents the results of test application research:
 | OpenSearch | ➖ | ➖ | ➖ |  | ➕ | ➖ |
 | REST | ➕ | ➕ | ❓ |  | ➕ | ➕ |
 | gRPC | ➕ | ➖ | ➕ |  | ➖ | ➖ |
-| pods count |  |  | 11 |  | 24 | 12 |
+| pods count | 13 |  | 11 |  | 24 | 12 |
 | mem limit OOB |  |  | 3G |  | 8GB | 2.57Gi |
 | cpu limit OOB |  |  | 3 |  | 4 cores (works slow even on 16) | 2.4 cores |
