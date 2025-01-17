@@ -11,10 +11,11 @@ Edit values.yml - change redis pvc storageClass to local-path if it's default st
 ```
 helm install robot-shop -n robot-shop .
 ```
-If you already installed nginx-ingress-cotroller in rancher, you can try to create ingress (host can be set to any other preferrable) for web ui:
+If you already installed nginx-ingress-cotroller in rancher, you can try to create ingress for web ui:
 ```
 kubectl create ingress robot-shop-web -n robot-shop --class=nginx --rule="robot-shop.<host_address>/*=web:8080"
 ```
+where `host_address` is any preferrable DNS address for your rancher k8s instance.
 example:
 ```
 kubectl create ingress robot-shop-web -n robot-shop --class=nginx --rule="robot-shop.demo.rancher-desktop.qubership.org/*=web:8080"
