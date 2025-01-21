@@ -22,4 +22,10 @@ kubectl create ingress robot-shop-web -n robot-shop --class=nginx --rule="robot-
 ```
 Add a record for chosen host address in hosts file to redirect requests to 127.0.0.1 or install and configure local DNS to redirect all *.<host_address> requests to localhost.
 
+On modern Linux distro names with suffixes `.localhost.localdomain` resolved to 127.0.0.1
+So with default Rancher-Desktop traefik installation you can use following command to create ingress:
+```shell
+kubectl create ingress robot-shop-web -n robot-shop --class=traefik --rule="robot-shop.localhost.localdomain/*=web:8080"
+```
+
 [How to setup NGIX-Ingress-Controller on rancher-desktop](https://docs.rancherdesktop.io/how-to-guides/setup-NGINX-Ingress-Controller/)
