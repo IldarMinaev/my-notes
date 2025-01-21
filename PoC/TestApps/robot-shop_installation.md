@@ -34,12 +34,45 @@ So with default Rancher-Desktop traefik installation you can use following comma
 kubectl create ingress robot-shop-web -n robot-shop --class=traefik --rule="robot-shop.localhost.localdomain/*=web:8080"
 ```
 # Make observable
-Make sure observability backends installed and open-telemetry collector created. See [[Observability Cluster Backends]]
-### Patch deployments with annotations
+Make sure observability backends installed and open-telemetry collector created. See [[Observability Cluster Backends#Create an OpenTelemetry Collector]]
+## Create instrumentation
+```shell
+kubectl apply -n robot-shop -f - <<EOF
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: otel-instrumentation
+spec:
+  exporter:
+    endpoint: http://otel-collector-collector:4317
+  propagators:
+    - tracecontext
+    - baggage
+    - b3
+  sampler:
+    type: parentbased_traceidratio
+    argument: "1.0"
+  # Looks like need to cafefully read documentation/agents code. As defaults for protocol (http/protobuf or grpc) is different.
+  #python:
+  #  env:
+  #    - name: OTEL_EXPORTER_OTLP_ENDPOINT
+  #      value: http://otel-collector-collector:4318
+  #java:
+  #  env:
+  #    - name: OTEL_EXPORTER_OTLP_ENDPOINT
+  #      value: http://otel-collector-collector:4318
+  #go:
+  #  env:
+  #    - name: OTEL_EXPORTER_OTLP_ENDPOINT
+  #      value: http://otel-collector-collector:4318
+EOF
+```
+## Patch deployments with annotations
 For Java applications:
 ```shell
 kubectl patch deploy shipping -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-java":"true"}}}} }'
 ```
+TODO add annotations to all other services
 # Run load
 ```shell
 ./K8s/autoscale.sh

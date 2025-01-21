@@ -174,7 +174,8 @@ helm upgrade --install \
   --create-namespace \
   --set "manager.collectorImage.repository=otel/opentelemetry-collector-contrib"
 ```
-Create an OpenTelemetry Collector (otelcol) instance in required namespace
+### Create an OpenTelemetry Collector
+Otelcol instance should be created in required namespace
 ```shell
 NAMESPACE=robot-shop
 ```
