@@ -33,7 +33,13 @@ So with default Rancher-Desktop traefik installation you can use following comma
 ```shell
 kubectl create ingress robot-shop-web -n robot-shop --class=traefik --rule="robot-shop.localhost.localdomain/*=web:8080"
 ```
-
+# Make observable
+Make sure observability backends installed and open-telemetry collector created. See [[Observability Cluster Backends]]
+### Patch deployments with annotations
+For Java applications:
+```shell
+kubectl patch deploy shipping -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-java":"true"}}}} }'
+```
 # Run load
 ```shell
 ./K8s/autoscale.sh

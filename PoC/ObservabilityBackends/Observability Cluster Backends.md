@@ -89,8 +89,38 @@ helm upgrade --install \
   -n monitoring \
   --create-namespace
 ```
-TODO Add creation of VM Stack
-
+Create VMSingle instance
+```shell
+kubectl apply -n monitoring -f - <<EOF
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMSingle
+metadata:
+  name: k8s-vmsingle
+spec:
+  retentionPeriod: 2d
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "1000m"
+  storage:
+    storageClassName: local-path
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+  removePvcAfterDelete: true
+  extraArgs:
+    dedup.minScrapeInterval: 60s
+EOF
+```
+Create ingress
+```shell
+kubectl create ingress k8s-vmsingle -n monitoring --class=traefik --rule="vmsingle-monitoring.localhost.localdomain/*=vmsingle-k8s-vmsingle:8429"
+```
 ## Jaeger
 See https://github.com/Netcracker/qubership-jaeger/
 Clone repo
@@ -132,11 +162,68 @@ helm upgrade --install \
   --set cassandraSchemaJob.datacenter=dc1
 ```
 ## Open-telemetry operator
+Add helm repo
+```shell
+helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts --force-update
+```
 Install with helm
 ```shell
-
+helm upgrade --install \
+  opentelemetry-operator open-telemetry/opentelemetry-operator \
+  --namespace opentelemetry-operator-system \
+  --create-namespace \
+  --set "manager.collectorImage.repository=otel/opentelemetry-collector-contrib"
 ```
-Create observations
+Create an OpenTelemetry Collector (otelcol) instance in required namespace
 ```shell
-
+NAMESPACE=robot-shop
+```
+```shell
+kubectl apply -n ${NAMESPACE:-default} -f - <<EOF
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel-collector
+spec:
+  config:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+    processors:
+      memory_limiter:
+        check_interval: 1s
+        limit_percentage: 75
+        spike_limit_percentage: 15
+      batch:
+        send_batch_size: 10000
+        timeout: 10s
+    exporters:
+      debug: {}
+      otlp:
+        endpoint: "jaeger-collector.jaeger.svc.cluster.local:4317"
+        tls:
+          insecure: true
+      prometheus:
+        endpoint: "0.0.0.0:8889"
+      prometheusremotewrite:  
+        endpoint: "http://vmsingle-k8s-vmsingle.monitoring.svc.cluster.local:8428/api/v1/write"
+        tls:
+          insecure: true
+        headers:
+          Content-Type: application/x-protobuf
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters: [debug, otlp]
+        metrics:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters: [prometheusremotewrite, debug]
+EOF
 ```
