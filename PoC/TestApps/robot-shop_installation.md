@@ -90,17 +90,15 @@ kubectl patch Instrumentation otel-instrumentation -n robot-shop --type=merge -p
 ```
 TODO add annotations to all other services
 
----
-**NOTE**
-You can create multiple instrumentation custom resources with different settings and images and bind to particular microservices with annotation:
-```shell
-instrumentation.opentelemetry.io/inject-<language>: <your_instrumentation_cr_name>
-```
-example:
-```shell
-kubectl patch deploy shipping -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-java":"my-instrumentation"}}}} }'
-```
----
+> **NOTE**
+> You can create multiple instrumentation custom resources with different settings and images and bind to particular microservices with annotation:
+> ```shell
+> instrumentation.opentelemetry.io/inject-<language>: <your_instrumentation_cr_name>
+> ```
+> example:
+> ```shell
+> kubectl patch deploy shipping -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-java":"my-instrumentation"}}}} }'
+> ```
 
 # Run load
 ```shell
