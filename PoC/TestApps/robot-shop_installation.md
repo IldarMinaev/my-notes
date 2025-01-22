@@ -88,18 +88,18 @@ Collector endpoint also should be changed to 4318 port in CR instrumentation and
 ```shell
 kubectl patch Instrumentation otel-instrumentation -n robot-shop --type=merge -p '{"spec":{"python":{"env":[{"name":"OTEL_EXPORTER_OTLP_ENDPOINT","value":"http://qubership-opentelemetry-collector.open-telemetry:4318"}],"image":"ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-python:0.48b0"}}}'
 ```
-
 TODO add annotations to all other services
+
 ---
 **NOTE**
 You can create multiple instrumentation custom resources with different settings and images and bind to particular microservices with annotation:
-```shell
+
 instrumentation.opentelemetry.io/inject-<language>: <your_instrumentation_cr_name>
-```
+
 example:
-```shell
+
 kubectl patch deploy shipping -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-java":"my-instrumentation"}}}} }'
-```
+
 ---
 
 # Run load
