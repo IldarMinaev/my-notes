@@ -68,11 +68,11 @@ spec:
 EOF
 ```
 ## Patch deployments with annotations
-For Java applications:
+#### For Java applications:
 ```shell
 kubectl patch deploy shipping -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-java":"true"}}}} }'
 ```
-For Go applications:
+#### For Go applications:
 ```shell
 kubectl patch deploy dispatch -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-go":"true","instrumentation.opentelemetry.io/otel-go-auto-target-exe":"/go/bin/dispatch"}}}}}'
 ```
@@ -80,7 +80,7 @@ In Instrumentation CR need to change env variable OTEL_EXPORTER_OTLP_ENDPOINT to
 ```shell
 kubectl patch Instrumentation otel-instrumentation -n robot-shop --type=merge -p '{"spec":{"go":{"env":[{"name":"OTEL_EXPORTER_OTLP_ENDPOINT","value":"http://qubership-opentelemetry-collector.open-telemetry:4318"}],"image":"ghcr.io/open-telemetry/opentelemetry-go-instrumentation/autoinstrumentation-go:v0.12.0-alpha"}}}'
 ```
-For Python applications:
+#### For Python applications:
 ```shell
 kubectl patch deploy payment -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-python":"true"}}}} }'
 ```
@@ -88,7 +88,20 @@ Collector endpoint also should be changed to 4318 port in CR instrumentation and
 ```shell
 kubectl patch Instrumentation otel-instrumentation -n robot-shop --type=merge -p '{"spec":{"python":{"env":[{"name":"OTEL_EXPORTER_OTLP_ENDPOINT","value":"http://qubership-opentelemetry-collector.open-telemetry:4318"}],"image":"ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-python:0.48b0"}}}'
 ```
+
 TODO add annotations to all other services
+---
+**NOTE**
+You can create multiple instrumentation custom resources with different settings and images and bind to particular microservices with annotation:
+```shell
+instrumentation.opentelemetry.io/inject-<language>: <your_instrumentation_cr_name>
+```
+example:
+```shell
+kubectl patch deploy shipping -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-java":"my-instrumentation"}}}} }'
+```
+---
+
 # Run load
 ```shell
 ./K8s/autoscale.sh
