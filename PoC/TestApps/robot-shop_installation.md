@@ -73,6 +73,8 @@ EOF
 kubectl patch deploy shipping -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-java":"true"}}}} }'
 ```
 #### For Go applications:
+Enable Go language support in opentelemetry-operator by adding the flag --enable-go-instrumentation=true in operator's manager arguments.
+Annotate deployment with inject-go: true and with path to target executable binary:
 ```shell
 kubectl patch deploy dispatch -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-go":"true","instrumentation.opentelemetry.io/otel-go-auto-target-exe":"/go/bin/dispatch"}}}}}'
 ```
