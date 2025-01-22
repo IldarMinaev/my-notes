@@ -76,7 +76,7 @@ kubectl patch deploy shipping -n robot-shop -p '{"spec": {"template":{"metadata"
 ```shell
 kubectl patch deploy dispatch -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-go":"true","instrumentation.opentelemetry.io/otel-go-auto-target-exe":"/go/bin/dispatch"}}}}}'
 ```
-In Instrumentation CR need to change env variable OTEL_EXPORTER_OTLP_ENDPOINT to point Go service on 4318 port of opentelemetry collector and change go-instrumentation image version to v0.12.0-alpha (replace collector endpoint with actual address on your environment):
+In Instrumentation CR need to change env variable OTEL_EXPORTER_OTLP_ENDPOINT to send telemetry data to 4318 port on opentelemetry collector and change go-instrumentation image version to v0.12.0-alpha (replace collector endpoint with actual address on your environment):
 ```shell
 kubectl patch Instrumentation otel-instrumentation -n robot-shop --type=merge -p '{"spec":{"go":{"env":[{"name":"OTEL_EXPORTER_OTLP_ENDPOINT","value":"http://qubership-opentelemetry-collector.open-telemetry:4318"}],"image":"ghcr.io/open-telemetry/opentelemetry-go-instrumentation/autoinstrumentation-go:v0.12.0-alpha"}}}'
 ```
