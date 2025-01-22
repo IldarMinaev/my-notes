@@ -102,6 +102,10 @@ TODO add annotations to all other services
 > kubectl patch deploy shipping -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-java":"my-instrumentation"}}}} }'
 > ```
 
+#### For Nginx applications
+```shell
+kubectl patch deploy web -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-nginx": "true"}}}} }'
+```
 # Run load
 ```shell
 ./K8s/autoscale.sh
