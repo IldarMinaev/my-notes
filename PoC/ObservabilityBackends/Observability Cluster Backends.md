@@ -222,8 +222,7 @@ helm upgrade --install \
   --namespace opentelemetry-operator-system \
   --create-namespace \
   --set "manager.collectorImage.repository=otel/opentelemetry-collector-contrib" \
-  --set manager.extraArgs={"--enable-go-instrumentation=true"} \
-  --set manager.extraArgs={"--enable-nginx-instrumentation=true"}
+  --set 'manager.extraArgs={--enable-go-instrumentation=true,--enable-nginx-instrumentation=true}' \
 ```
 ### Create an OpenTelemetry Collector
 Otelcol instance should be created in required namespace
