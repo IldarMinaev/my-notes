@@ -112,7 +112,9 @@ Currentrly autoinstrumentation for nginx works with the following versions of ng
 
 As initially microservice web in robot-shop is built on base of nginx:1.21.6, it's required to rebuild the image of web:
 Navigate to web folder in robot-shop folder. Change Dockerfile: replace nginx:1.21.6 with nginx:1.25.3
+
 Open rancher, navigate to Images, click on Add Image button, switch to Build, type the name of image: robotshop/rs-web:nginx-1.25.3, click Build and choose Dockerfile located in the web folder.
+
 After the image is succesfully built change the image in k8s for the microservice web to robotshop/rs-web:nginx-1.25.3
 
 #### For Node.js applications
