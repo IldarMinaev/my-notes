@@ -116,6 +116,9 @@ Navigate to web folder in robot-shop folder. Change Dockerfile: replace nginx:1.
 Open rancher, navigate to Images, click on Add Image button, switch to Build, type the name of image: robotshop/rs-web:nginx-1.25.3, click Build and choose Dockerfile located in the web folder.
 
 After the image is succesfully built change the image in k8s for the microservice web to robotshop/rs-web:nginx-1.25.3
+```shell
+kubectl patch deploy web -n robot-shop -p '{"spec": {"template":{"spec":{"containers":[{"name":"web","image":"robotshop/rs-web:nginx-1.25.2"}]}}}}'
+```
 
 #### For Node.js applications
 ```shell
