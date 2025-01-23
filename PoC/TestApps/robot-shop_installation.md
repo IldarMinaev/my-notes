@@ -128,6 +128,8 @@ kubectl patch deploy web -n robot-shop -p '{"spec": {"template":{"spec":{"contai
 #### For Node.js applications
 ```shell
 kubectl patch deploy cart -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-nodejs": "true"}}}} }'
+kubectl patch deploy catalogue -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-nodejs": "true"}}}} }'
+kubectl patch deploy user -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-nodejs": "true"}}}} }'
 ```
 
 # Run load
