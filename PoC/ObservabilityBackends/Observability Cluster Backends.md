@@ -1,4 +1,6 @@
 # Prerequisites
+## Kubernetes
+Everything in this article tested on [[06. Dev packages#Rancher Desktop|Rancher Desktop]] version 1.17.0 on Fedora 41 Linux. This version of Rancher has some issues on MacOs, Windows and some Linux distro. See latest release notes of Rancher for more details.
 ## Cert Manager
 See documentation [https://cert-manager.io/docs/installation/helm/](https://cert-manager.io/docs/installation/helm/)
 Add helm repo
@@ -68,6 +70,7 @@ EOF
 # Back-ends
 ## Grafana operated
 See [https://grafana.github.io/grafana-operator/docs/installation/helm/](https://grafana.github.io/grafana-operator/docs/installation/helm/)
+### Install with helm
 ```shell
 helm upgrade -i \
   grafana-operator oci://ghcr.io/grafana/helm-charts/grafana-operator \
@@ -75,7 +78,7 @@ helm upgrade -i \
   --create-namespace \
   --version v5.16.0
 ```
-Create grafana instance
+### Create grafana instance
 ```shell
 kubectl apply -n monitoring -f - <<EOF
 ---
