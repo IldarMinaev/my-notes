@@ -85,23 +85,27 @@ kubectl apply -n monitoring -f - <<EOF
 apiVersion: grafana.integreatly.org/v1beta1
 kind: Grafana
 metadata:
-  name: grafana-k8s
+  name: k8s-grafana
   labels:
     dashboards: "grafana"
 spec:
   config:
+    security:
+      admin_user: root
+      admin_password: secret
     log:
       mode: "console"
       level: "error"
   ingress:
     spec:
+      ingressClassName: traefik
       rules:
         - host: grafana-monitoring.localhost.localdomain
           http:
             paths:
               - backend:
                   service:
-                    name: grafana-service
+                    name: k8s-grafana-service
                     port:
                       number: 3000
                 path: /
@@ -140,7 +144,7 @@ helm upgrade --install \
   -n monitoring \
   --create-namespace
 ```
-Create VMSingle instance
+### Create VMSingle instance
 ```shell
 kubectl apply -n monitoring -f - <<EOF
 apiVersion: operator.victoriametrics.com/v1beta1
@@ -168,9 +172,63 @@ spec:
     dedup.minScrapeInterval: 60s
 EOF
 ```
-Create ingress
+### Create ingress
 ```shell
 kubectl create ingress k8s-vmsingle -n monitoring --class=traefik --rule="vmsingle-monitoring.localhost.localdomain/*=vmsingle-k8s-vmsingle:8429"
+```
+### Scrape Metrics Server
+```shell
+kubectl apply -n monitoring -f - <<EOF
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: metrics-server
+spec:
+  namespaceSelector:
+    matchNames:
+    - kube-system
+  selector:
+    matchLabels:
+      kubernetes.io/name: Metrics-server
+  endpoints:
+  - port: "443"
+    scheme: https
+    tlsConfig:
+      insecureSkipVerify: true
+      caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: view-metrics
+rules:
+- apiGroups:
+    - metrics.k8s.io
+  resources:
+    - pods
+    - nodes
+  verbs:
+    - get
+    - list
+    - watch
+- nonResourceURLs: ["/metrics"]
+  verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: view-metrics
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view-metrics
+subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: system:serviceaccount:vm:vmagent
+EOF
 ```
 ## Jaeger
 See https://github.com/Netcracker/qubership-jaeger/
@@ -229,6 +287,7 @@ Otelcol instance should be created in required namespace
 ```shell
 NAMESPACE=robot-shop
 ```
+
 ```shell
 kubectl apply -n ${NAMESPACE:-default} -f - <<EOF
 apiVersion: opentelemetry.io/v1beta1
@@ -261,7 +320,7 @@ spec:
       prometheus:
         endpoint: "0.0.0.0:8889"
       prometheusremotewrite:  
-        endpoint: "http://vmsingle-k8s-vmsingle.monitoring.svc.cluster.local:8428/api/v1/write"
+        endpoint: "http://vmsingle-k8s-vmsingle.monitoring.svc.cluster.local:8429/api/v1/write"
         tls:
           insecure: true
         headers:
