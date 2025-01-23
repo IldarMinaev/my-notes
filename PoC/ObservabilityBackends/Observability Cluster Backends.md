@@ -75,6 +75,54 @@ helm upgrade -i \
   --create-namespace \
   --version v5.16.0
 ```
+Create grafana instance
+```shell
+kubectl apply -n monitoring -f - <<EOF
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana-k8s
+  labels:
+    dashboards: "grafana"
+spec:
+  config:
+    log:
+      mode: "console"
+      level: "error"
+  ingress:
+    spec:
+      rules:
+        - host: grafana-monitoring.localhost.localdomain
+          http:
+            paths:
+              - backend:
+                  service:
+                    name: grafana-service
+                    port:
+                      number: 3000
+                path: /
+                pathType: Prefix
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: grafanadatasource-vmsingle
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  datasource:
+    name: vmsingle
+    type: prometheus
+    access: proxy
+    url: http://vmsingle-k8s-vmsingle:8429
+    isDefault: true
+    jsonData:
+      "tlsSkipVerify": true
+      "timeInterval": "5s"
+EOF
+```
 TODO add creation of grafana https://github.com/grafana/grafana-operator/blob/master/examples/grafana_deployment/resources.yaml
 ## Victoria-Metrics operator
 See [https://docs.victoriametrics.com/helm/victoriametrics-operator/index.html](https://docs.victoriametrics.com/helm/victoriametrics-operator/index.html)
