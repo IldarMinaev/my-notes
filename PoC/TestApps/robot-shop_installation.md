@@ -82,6 +82,10 @@ In Instrumentation CR need to change env variable OTEL_EXPORTER_OTLP_ENDPOINT to
 ```shell
 kubectl patch Instrumentation otel-instrumentation -n robot-shop --type=merge -p '{"spec":{"go":{"env":[{"name":"OTEL_EXPORTER_OTLP_ENDPOINT","value":"http://qubership-opentelemetry-collector.open-telemetry:4318"}],"image":"ghcr.io/open-telemetry/opentelemetry-go-instrumentation/autoinstrumentation-go:v0.12.0-alpha"}}}'
 ```
+Or for otel collector in same namespace:
+```shell
+kubectl patch Instrumentation otel-instrumentation -n robot-shop --type=merge -p '{"spec":{"go":{"env":[{"name":"OTEL_EXPORTER_OTLP_ENDPOINT","value":"http://otel-collector-collector:4318"}],"image":"ghcr.io/open-telemetry/opentelemetry-go-instrumentation/autoinstrumentation-go:v0.12.0-alpha"}}}'
+```
 #### For Python applications:
 ```shell
 kubectl patch deploy payment -n robot-shop -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-python":"true"}}}} }'
@@ -89,6 +93,10 @@ kubectl patch deploy payment -n robot-shop -p '{"spec": {"template":{"metadata":
 Collector endpoint also should be changed to 4318 port in CR instrumentation and default python instrumentation image to 0.48b0 (replace collector endpoint with actual address on your environment):
 ```shell
 kubectl patch Instrumentation otel-instrumentation -n robot-shop --type=merge -p '{"spec":{"python":{"env":[{"name":"OTEL_EXPORTER_OTLP_ENDPOINT","value":"http://qubership-opentelemetry-collector.open-telemetry:4318"}],"image":"ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-python:0.48b0"}}}'
+```
+Or for otel collector in same namespace:
+```shell
+kubectl patch Instrumentation otel-instrumentation -n robot-shop --type=merge -p '{"spec":{"python":{"env":[{"name":"OTEL_EXPORTER_OTLP_ENDPOINT","value":"http://otel-collector-collector:4318"}],"image":"ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-python:0.48b0"}}}'
 ```
 TODO add annotations to all other services
 
