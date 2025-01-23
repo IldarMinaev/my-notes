@@ -187,9 +187,7 @@ echo -n Enter your GITHUB_PAT:\  &&\
   read -s GITHUB_PAT && echo && \
   echo -n Enter your GitHub Account:\  && \
   read GITHUB_USER && echo && \
-  echo -n Enter your GitHub E-Mail:\  && \
-  read GITHUB_EMAIL && echo && \
-  kubectl create -n $NAMESPACE secret docker-registry ghcr-io-secret --docker-username="$GITHUB_USER" --docker-password="$GITHUB_PAT" --docker-email="$GITHUB_EMAIL"
+  kubectl create -n $NAMESPACE secret docker-registry ghcr-io-secret --docker-username="$GITHUB_USER" --docker-password="$GITHUB_PAT"
 ```
 Install with helm
 ```shell
@@ -201,8 +199,8 @@ helm upgrade --install \
   --namespace jaeger \
   --create-namespace \
   --set jaeger.prometheusMonitoringDashboard=false \
-  --set 'collector.readinessProbe.imagePullSecrets[0].name=ghcr-io-secret' \
-  --set 'query.readinessProbe.imagePullSecrets[0].name=ghcr-io-secret' \
+  --set 'collector.imagePullSecrets[0].name=ghcr-io-secret' \
+  --set 'query.imagePullSecrets[0].name=ghcr-io-secret' \
   --set query.ingress.install=true \
   --set query.ingress.host=query.jaeger.localhost.localdomain \
   --set collector.ingress.install=true \
