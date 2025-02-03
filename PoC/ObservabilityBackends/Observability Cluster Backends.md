@@ -245,7 +245,7 @@ echo -n Enter your GITHUB_PAT:\  &&\
   read -s GITHUB_PAT && echo && \
   echo -n Enter your GitHub Account:\  && \
   read GITHUB_USER && echo && \
-  kubectl create -n $NAMESPACE secret docker-registry ghcr-io-secret --docker-username="$GITHUB_USER" --docker-password="$GITHUB_PAT"
+  kubectl create -n $NAMESPACE secret docker-registry ghcr-io-secret --docker-username="$GITHUB_USER" --docker-password="$GITHUB_PAT" --docker-server='https://ghcr.io/v1/'
 ```
 Install with helm
 ```shell
