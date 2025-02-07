@@ -266,7 +266,8 @@ helm upgrade --install \
   --set "cassandraSchemaJob.host=$CASSANDRA_SVC" \
   --set "cassandraSchemaJob.username=$CASSANDRA_USER" \
   --set "cassandraSchemaJob.password=$CASSANDRA_PASSWORD" \
-  --set cassandraSchemaJob.datacenter=dc1
+  --set cassandraSchemaJob.datacenter=dc1 #\
+#  --set integrationTests.install=true
 ```
 ## Open-telemetry operator
 Add helm repo
