@@ -176,6 +176,30 @@ EOF
 ```shell
 kubectl create ingress k8s-vmsingle -n monitoring --class=traefik --rule="vmsingle-monitoring.localhost.localdomain/*=vmsingle-k8s-vmsingle:8429"
 ```
+### Create VMAgent instance
+```shell
+kubectl apply -n monitoring -f - <<EOF
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAgent
+metadata:
+  name: sample
+spec:
+  selectAllByDefault: true
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "350Mi"
+    limits:
+      cpu: "500m"
+      memory: "850Mi"
+  extraArgs:
+    memory.allowedPercent: "40"
+  remoteWrite:
+  - url: "http://vmsingle-k8s-vmsingle.monitoring.svc.cluster.local:8429/api/v1/write"
+EOF
+```
 ### Scrape Metrics Server
 ```shell
 kubectl apply -n monitoring -f - <<EOF
