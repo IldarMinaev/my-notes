@@ -281,6 +281,7 @@ helm upgrade --install \
   --namespace jaeger \
   --create-namespace \
   --set jaeger.prometheusMonitoringDashboard=false \
+  --set jaeger.prometheusMonitoring=false \
   --set 'collector.imagePullSecrets[0].name=ghcr-io-secret' \
   --set 'query.imagePullSecrets[0].name=ghcr-io-secret' \
   --set query.ingress.install=true \
