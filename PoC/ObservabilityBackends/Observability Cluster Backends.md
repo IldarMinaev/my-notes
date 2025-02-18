@@ -363,3 +363,59 @@ spec:
           exporters: [prometheusremotewrite, debug]
 EOF
 ```
+## Graylog logging-operator
+### Mongo operator
+MongoDB is required by graylog.
+Add helm repo
+```shell
+helm repo add mongodb https://mongodb.github.io/helm-charts  --force-update
+```
+Install with helm
+```shell
+helm upgrade --install \
+  community-operator mongodb/community-operator \
+  --namespace mongodb \
+  --create-namespace \
+  --set operator.watchNamespace="mongodb"
+```
+Create mongoDB instance:
+```shell
+kubectl apply -n mongodb -f - <<EOF
+---
+apiVersion: mongodbcommunity.mongodb.com/v1
+kind: MongoDBCommunity
+metadata:
+  name: mongodb
+spec:
+  members: 1
+  type: ReplicaSet
+  version: "6.0.5"
+  security:
+    authentication:
+      modes: ["SCRAM"]
+  users:
+    - name: mongo-user
+      db: admin
+      passwordSecretRef: # a reference to the secret that will be used to generate the user's password
+        name: mongo-user-password
+      roles:
+        - name: clusterAdmin
+          db: admin
+        - name: userAdminAnyDatabase
+          db: admin
+      scramCredentialsSecretName: my-scram
+  additionalMongodConfig:
+    storage.wiredTiger.engineConfig.journalCompressor: zlib
+
+# the user credentials will be generated from this secret
+# once the credentials are generated, this secret is no longer required
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongo-user-password
+type: Opaque
+stringData:
+  password: password
+EOF
+```
