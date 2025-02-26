@@ -168,7 +168,7 @@ done
 kubectl patch sts redis -n robot-shop --type='merge' -p '{"spec":{"template":{"metadata":{"labels":{"app.kubernetes.io/name":"redis"}}}}}'
 ```
 
-Apply permissive CiliumNetworkPolicy with L7 rules in robot-shop namespace:
+#### Apply permissive CiliumNetworkPolicy with L7 rules in robot-shop namespace:
 ```sh
 cat <<EOF | kubectl apply -n robot-shop -f -
 apiVersion: cilium.io/v2
@@ -228,3 +228,186 @@ spec:
 EOF
 ```
 
+#### Adding scrape configs to existing VictoriaMetrics server
+1) Create 2 VMServiceScrape custom resources in monitoring namespace:
+
+envoy-metrics:
+``` 
+kubectl apply -n monitoring -f - <<EOF
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: envoy-metrics
+spec:
+  endpoints:
+    - port: envoy-metrics
+      relabelConfigs:
+        - action: keep
+          regex: 'true'
+          source_labels:
+            - __meta_kubernetes_service_annotation_prometheus_io_scrape
+        - action: replace
+          regex: ([^:]+)(?::\d+)?;(\d+)
+          replacement: "\${1}:\${2}"
+          source_labels:
+            - __address__
+            - __meta_kubernetes_service_annotation_prometheus_io_port
+          target_label: __address__
+        - action: keep
+          regex: cilium-envoy
+          source_labels:
+            - __meta_kubernetes_service_label_k8s_app
+        - action: labelmap
+          regex: __meta_kubernetes_service_label_(.+)
+        - action: replace
+          source_labels:
+            - __meta_kubernetes_namespace
+          target_label: namespace
+        - action: replace
+          source_labels:
+            - __meta_kubernetes_service_name
+          target_label: service
+  namespaceSelector:
+    matchNames:
+      - kube-system
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cilium-envoy
+EOF
+```
+hubble-metrics:
+```
+kubectl apply -n monitoring -f - <<EOF
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: hubble-metrics
+spec:
+  endpoints:
+    - port: hubble-metrics
+      relabelConfigs:
+        - action: keep
+          regex: 'true'
+          source_labels:
+            - __meta_kubernetes_service_annotation_prometheus_io_scrape
+        - action: replace
+          regex: (.+)(?::\d+);(\d+)
+          replacement: "\${1}:\${2}"
+          source_labels:
+            - __address__
+            - __meta_kubernetes_service_annotation_prometheus_io_port
+          target_label: __address__
+        - action: keep
+          regex: hubble
+          source_labels:
+            - __meta_kubernetes_service_label_k8s_app
+        - action: labelmap
+          regex: __meta_kubernetes_service_label_(.+)
+        - action: replace
+          source_labels:
+            - __meta_kubernetes_namespace
+          target_label: namespace
+        - action: replace
+          source_labels:
+            - __meta_kubernetes_service_name
+          target_label: service
+  namespaceSelector:
+    matchNames:
+      - kube-system
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hubble
+EOF  
+```
+If console waits for some input, copy the yaml to notepad++, VS Code or other IDE, change line break to Unix (LF) and apply.
+2) Create 2 VMPodScrape custom resources:
+
+cilium-metrics:
+```sh
+kubectl apply -n monitoring -f - <<EOF
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: cilium-metrics
+spec:
+  namespaceSelector:
+    matchNames:
+      - kube-system
+  podMetricsEndpoints:
+    - port: prometheus
+      relabelConfigs:
+        - action: keep
+          regex: 'true'
+          source_labels:
+            - __meta_kubernetes_pod_annotation_prometheus_io_scrape
+        - action: replace
+          regex: (.+):(?:\d+);(\d+)
+          replacement: "\${1}:\${2}"
+          source_labels:
+            - __address__
+            - __meta_kubernetes_pod_annotation_prometheus_io_port
+          target_label: __address__
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - action: replace
+          source_labels:
+            - __meta_kubernetes_namespace
+          target_label: namespace
+        - action: replace
+          source_labels:
+            - __meta_kubernetes_pod_name
+          target_label: pod
+        - action: keep
+          regex: \d+
+          source_labels:
+            - __meta_kubernetes_pod_container_port_number
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cilium-agent
+EOF
+```
+cilium-operator-metrics:
+```sh
+kubectl apply -n monitoring -f - <<EOF
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: cilium-operator-metrics
+spec:
+  namespaceSelector:
+    matchNames:
+      - kube-system
+  podMetricsEndpoints:
+    - port: prometheus
+      relabelConfigs:
+        - action: keep
+          regex: 'true'
+          source_labels:
+            - __meta_kubernetes_pod_annotation_prometheus_io_scrape
+        - action: replace
+          regex: (.+):(?:\d+);(\d+)
+          replacement: "\${1}:\${2}"
+          source_labels:
+            - __address__
+            - __meta_kubernetes_pod_annotation_prometheus_io_port
+          target_label: __address__
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - action: replace
+          source_labels:
+            - __meta_kubernetes_namespace
+          target_label: namespace
+        - action: replace
+          source_labels:
+            - __meta_kubernetes_pod_name
+          target_label: pod
+        - action: keep
+          regex: \d+
+          source_labels:
+            - __meta_kubernetes_pod_container_port_number
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cilium-operator
+EOF
+```
+3) Import grafana dashboards from cilium demo monitoring and change datasource to Prometheus, uid to the actual one, which can extracted from URL grafana_URL/connections/datasources/edit/<uid> when datasource settings are opened.
