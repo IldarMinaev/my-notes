@@ -4,11 +4,13 @@ kind, kubectl, helm installed
 System requirements:
 https://docs.cilium.io/en/stable/operations/system_requirements/
 
-Cilium requires additional kernel modules to be available. So before installing cilium need to build a kernel with all required modules according to either of these 2 articles:
+Cilium requires some kernel modules to be included or loaded dynamically. So before installing cilium need to build a kernel with all required modules listed in the above link with system requirements and proceed according to either of these 2 articles:
+
 https://wsl.dev/wslcilium/
 
 https://jackliusr.github.io/posts/2024/03/setup-kind-cluster-using-cilium-cni-in-wsl2/
 
+### Kind cluster installation
 #### Create caching proxy registry for docker images
 ```sh
 docker run -d --name proxy --restart=always --net=kind \
@@ -74,6 +76,7 @@ containerdConfigPatches:
 kind get kubeconfig > ~/.kube/kind-cluster.yaml
 export KUBECONFIG=~/.kube/kind-cluster.yaml
 ```
+### Cilium installation and configuration
 #### Install v1.2.0 gatewayAPI crds:
 ```sh
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
