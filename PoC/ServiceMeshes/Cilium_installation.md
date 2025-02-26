@@ -319,7 +319,7 @@ spec:
       app.kubernetes.io/name: hubble
 EOF  
 ```
-If console waits for some input, copy the yaml to notepad++, VS Code or other IDE, change line break to Unix (LF) and apply.
+
 2) Create 2 VMPodScrape custom resources:
 
 cilium-metrics:
