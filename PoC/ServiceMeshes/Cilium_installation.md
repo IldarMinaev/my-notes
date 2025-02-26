@@ -410,4 +410,4 @@ spec:
       app.kubernetes.io/name: cilium-operator
 EOF
 ```
-3) Import grafana dashboards from cilium demo monitoring and change datasource to Prometheus, uid to the actual one, which can extracted from URL grafana_URL/connections/datasources/edit/<uid> when datasource settings are opened.
+3) Import grafana dashboards from cilium demo monitoring and change datasource to Prometheus, uid to the actual one, which can extracted from URL grafana_URL/connections/datasources/edit/\<uid\> when datasource settings are opened.
