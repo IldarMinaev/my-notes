@@ -1,8 +1,13 @@
+Prerequisites:
+kind, kubectl, helm installed
 System requirements:
 https://docs.cilium.io/en/stable/operations/system_requirements/
+
 Cilium requires additional kernel modules to be available. So before installing cilium need to build a kernel with all required modules according to either of these 2 articles:
 https://wsl.dev/wslcilium/
+
 https://jackliusr.github.io/posts/2024/03/setup-kind-cluster-using-cilium-cni-in-wsl2/
+
 #### Create caching proxy registry for docker images
 ```sh
 docker run -d --name proxy --restart=always --net=kind \
@@ -158,7 +163,7 @@ done
 kubectl patch sts redis -n robot-shop --type='merge' -p '{"spec":{"template":{"metadata":{"labels":{"app.kubernetes.io/name":"redis"}}}}}'
 ```
 
-Apply permissive CiliumNetworkPolicy in robot-shop namespace:
+Apply permissive CiliumNetworkPolicy with L7 rules in robot-shop namespace:
 ```sh
 cat <<EOF | kubectl apply -n robot-shop -f -
 apiVersion: cilium.io/v2
