@@ -1,5 +1,6 @@
 Prerequisites:
 kind, kubectl, helm installed
+
 System requirements:
 https://docs.cilium.io/en/stable/operations/system_requirements/
 
