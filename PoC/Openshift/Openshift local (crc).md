@@ -1,3 +1,4 @@
+# Installation
 First need to register on RedHat and Download crc binary and Pull Secret
 https://cloud.redhat.com/openshift/install/crc/installer-provisioned
 Binary can be downloaded in shell:
@@ -34,6 +35,8 @@ Or switch context of `kubectl` and use it to connect to OpenShift instance
 kubectl config get-contexts
 kubectl config use-context crc-admin
 ```
+Or use Web Console https://console-openshift-console.apps-crc.testing/dashboards
+# Useful commands
 To stop OpenShift instance
 ```shell
 crc stop
@@ -45,4 +48,5 @@ crc delete
 To cleanup the installation run
 ```shell
 crc cleanup
+rm -rf ~/.crc/
 ```
