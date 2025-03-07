@@ -57,10 +57,23 @@ By default `crc` create VM with 31GB disk size. To resize the VM use command
 ```shell
 crc config set disk-size 40 && crc stop && crc start
 ```
+By default crc create VM with 10GB RAM. To resize memory use command
+```shell
+crc config set memory 15360 && crc stop && crc start
+```
 # Use for devtest your images
+To use docker from `crc VM`. Note, VM should have enough memory to run build.
+```shell
+eval $(crc oc-env)
+eval $(crc podman-env)
+docker buildx build --progress=plain -t ghcr.io/netcracker/qubership-env-checker:main -f Dockerfile ./
+```
+You also can use your local docker instance (not from `crc VM`).
 Build your latest version of docker image
 ```shell
-docker build -t ghcr.io/netcracker/qubership-env-checker:none -f Dockerfile ./
+unset DOCKER_HOST CONTAINER_SSHKEY CONTAINER_HOST
+docker context use default
+docker buildx build --progress=plain -t ghcr.io/netcracker/qubership-env-checker:main -f Dockerfile ./
 ```
 Save it to file
 ```shell
