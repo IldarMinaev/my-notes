@@ -93,3 +93,11 @@ podman load -i /tmp/qubership-env-checker_none
 podman images | grep qubership
 podman images | head
 ```
+Helm installation of env-checker
+```shell
+helm upgrade --install --create-namespace \
+  --namespace=cse-toolset \
+  qubership-env-checker charts/env-checker \
+  --set NAMESPACE=cse-toolset \
+  --set CLOUD_PUBLIC_HOST=localhost.localdomain
+```
