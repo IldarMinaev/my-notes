@@ -364,58 +364,63 @@ spec:
 EOF
 ```
 ## Graylog logging-operator
-### Mongo operator
-MongoDB is required by graylog.
-Add helm repo
-```shell
-helm repo add mongodb https://mongodb.github.io/helm-charts  --force-update
-```
-Install with helm
-```shell
-helm upgrade --install \
-  community-operator mongodb/community-operator \
-  --namespace mongodb \
-  --create-namespace \
-  --set operator.watchNamespace="mongodb"
-```
-Create mongoDB instance:
-```shell
-kubectl apply -n mongodb -f - <<EOF
----
-apiVersion: mongodbcommunity.mongodb.com/v1
-kind: MongoDBCommunity
-metadata:
-  name: mongodb
-spec:
-  members: 1
-  type: ReplicaSet
-  version: "6.0.5"
-  security:
-    authentication:
-      modes: ["SCRAM"]
-  users:
-    - name: mongo-user
-      db: admin
-      passwordSecretRef: # a reference to the secret that will be used to generate the user's password
-        name: mongo-user-password
-      roles:
-        - name: clusterAdmin
-          db: admin
-        - name: userAdminAnyDatabase
-          db: admin
-      scramCredentialsSecretName: my-scram
-  additionalMongodConfig:
-    storage.wiredTiger.engineConfig.journalCompressor: zlib
+### Opensearch install
+To successfully deploy the logging operator, will need an opensearch database. MongoDB will setup while deploying 
+graylog service. Update the value for *opensearch.master.persistence.storageClass* in advance and a quick installation 
+can be performed based on a ready-made configuration file (just specify it as the -f flag): 
+[config-file](https://github.com/Netcracker/qubership-opensearch/blob/main/charts/helm/opensearch-service/example.yaml)
 
-# the user credentials will be generated from this secret
-# once the credentials are generated, this secret is no longer required
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: mongo-user-password
-type: Opaque
-stringData:
-  password: password
-EOF
+Install with helm:
+```shell
+helm upgrade --install opensearch-service \
+  --namespace=opensearch \
+  --create-namespace \
+  --set opensearch.master.persistence.storageClass=local-path \
+  --set opensearch.master.replicas=1 \
+  --set opensearch.tls.enabled=false \
+  charts/helm/opensearch-service \
+  -f charts/helm/opensearch-service/example.yaml
+```
+
+Install the logging operator. If opensearch is built according to the instructions above, then replacing 
+graylog.elasticsearchHost is not required. Here is an example of a helm command to install logging-operator with 
+**fluentbit**:
+
+```shell
+helm upgrade --install qubership-logging-operator \
+  --namespace=logging \
+  --create-namespace \
+  --set graylog.install=true \
+  --set graylog.storageSize=10Gi \
+  --set graylog.host=http://graylog.demo.qubership.org \
+  --set graylog.initContainerDockerImage=alpine:3.17.2 \
+  --set graylog.mongoStorageClassName=local-path \
+  --set graylog.graylogStorageClassName=local-path \
+  --set graylog.elasticsearchHost=http://admin:admin@opensearch.opensearch:9200 \
+  --set fluentbit.install=true \
+  --set fluentbit.graylogHost=graylog-service.logging \
+  --set fluentbit.graylogPort=12201 \
+  --set fluentbit.systemAuditLogging=false \
+  --set cloudEventsReader.install=false \
+  charts/qubership-logging-operator
+```
+
+Example of a helm command to install logging-operator with **fluentd**:
+
+```shell
+helm upgrade --install qubership-logging-operator \
+  --namespace=logging \
+  --create-namespace \
+  --set graylog.install=true \
+  --set graylog.storageSize=10Gi \
+  --set graylog.host=http://graylog.demo.qubership.org \
+  --set graylog.initContainerDockerImage=alpine:3.17.2 \
+  --set graylog.mongoStorageClassName=local-path \
+  --set graylog.graylogStorageClassName=local-path \
+  --set graylog.elasticsearchHost=http://admin:admin@opensearch.opensearch:9200 \
+  --set fluentd.install=true \
+  --set fluentd.graylogHost=graylog-service.logging \
+  --set fluentd.graylogPort=12201 \
+  --set cloudEventsReader.install=false \
+  charts/qubership-logging-operator
 ```
