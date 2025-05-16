@@ -78,6 +78,23 @@ helm upgrade -i \
   --create-namespace \
   --version v5.16.0
 ```
+
+#### Troubleshooting
+
+1) _Problem description_: docker-credential-secretservice: error while loading shared libraries: libsecret-1.so.0:
+   cannot open shared object file: No such file or directory  
+   _Solution_: run command
+   ```shell
+   sudo apt-get update
+   sudo apt-get install libsecret-1-0
+   ```
+2) _Problem description_: Error: error getting credentials - err: exec: "docker-credential-wincred.exe": executable file
+   not found in PATH, out: ``  
+   _Solution_: need to configure credential helper for Docker in Windows environment. Install docker-credential-wincred.exe then set the path to $PATH variable.
+   ```shell
+   echo 'export PATH=$PATH:"/mnt/c/Program Files/Rancher Desktop/resources/resources/win32/bin"' >> ~/.bashrc
+   source ~/.bashrc
+   ```
 ### Create grafana instance
 ```shell
 kubectl apply -n monitoring -f - <<EOF
@@ -382,7 +399,8 @@ helm upgrade --install opensearch-service \
   -f charts/helm/opensearch-service/example.yaml
 ```
 
-Install the logging operator. If opensearch is built according to the instructions above, then replacing 
+### Install the logging operator. 
+If opensearch is built according to the instructions above, then replacing 
 graylog.elasticsearchHost is not required. Here is an example of a helm command to install logging-operator with 
 **fluentbit**:
 
