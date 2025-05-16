@@ -161,6 +161,20 @@ helm upgrade --install \
   -n monitoring \
   --create-namespace
 ```
+#### Troubleshooting
+
+1) _Problem description_:
+   ```yaml
+   Error: Unable to continue with install: CustomResourceDefinition "vmauths.operator.victoriametrics.com" in namespace
+   "" exists and cannot be imported into the current release: invalid ownership metadata; label validation error:
+   missing key "app.kubernetes.io/managed-by": must be set to "Helm"; annotation validation error: missing key
+   "meta.helm.sh/release-name": must be set to "vmo"; annotation validation error: missing key
+   "meta.helm.sh/release-namespace": must be set to "monitoring"
+   ```
+   _Reason_: The problem was incompatibility or conflict of CRD and resource versions  
+   _Solution_: Try to run [Script For Deleting CRDs](https://docs.percona.com/everest/uninstall/uninstallEverest.html#remove-all-the-crds)
+   and rerun helm install command above
+
 ### Create VMSingle instance
 ```shell
 kubectl apply -n monitoring -f - <<EOF
