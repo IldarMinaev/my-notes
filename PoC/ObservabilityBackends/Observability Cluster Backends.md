@@ -282,8 +282,6 @@ helm upgrade --install \
   --create-namespace \
   --set jaeger.prometheusMonitoringDashboard=false \
   --set jaeger.prometheusMonitoring=false \
-  --set 'collector.imagePullSecrets[0].name=ghcr-io-secret' \
-  --set 'query.imagePullSecrets[0].name=ghcr-io-secret' \
   --set query.ingress.install=true \
   --set query.ingress.host=query.jaeger.localhost.localdomain \
   --set collector.ingress.install=true \
@@ -293,6 +291,9 @@ helm upgrade --install \
   --set "cassandraSchemaJob.password=$CASSANDRA_PASSWORD" \
   --set cassandraSchemaJob.datacenter=dc1 #\
 #  --set integrationTests.install=true
+#  --set 'collector.imagePullSecrets[0].name=ghcr-io-secret' \
+#  --set 'query.imagePullSecrets[0].name=ghcr-io-secret' \
+
 ```
 ## Open-telemetry operator
 Add helm repo
