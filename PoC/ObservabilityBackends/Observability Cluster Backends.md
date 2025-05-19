@@ -78,6 +78,23 @@ helm upgrade -i \
   --create-namespace \
   --version v5.16.0
 ```
+
+#### Troubleshooting
+
+1) _Problem description_: docker-credential-secretservice: error while loading shared libraries: libsecret-1.so.0:
+   cannot open shared object file: No such file or directory  
+   _Solution_: run command
+   ```shell
+   sudo apt-get update
+   sudo apt-get install libsecret-1-0
+   ```
+2) _Problem description_: Error: error getting credentials - err: exec: "docker-credential-wincred.exe": executable file
+   not found in PATH, out: ``  
+   _Solution_: need to configure credential helper for Docker in Windows environment. Install docker-credential-wincred.exe then set the path to $PATH variable.
+   ```shell
+   echo 'export PATH=$PATH:"/mnt/c/Program Files/Rancher Desktop/resources/resources/win32/bin"' >> ~/.bashrc
+   source ~/.bashrc
+   ```
 ### Create grafana instance
 ```shell
 kubectl apply -n monitoring -f - <<EOF
@@ -144,6 +161,20 @@ helm upgrade --install \
   -n monitoring \
   --create-namespace
 ```
+#### Troubleshooting
+
+1) _Problem description_:
+   ```yaml
+   Error: Unable to continue with install: CustomResourceDefinition "vmauths.operator.victoriametrics.com" in namespace
+   "" exists and cannot be imported into the current release: invalid ownership metadata; label validation error:
+   missing key "app.kubernetes.io/managed-by": must be set to "Helm"; annotation validation error: missing key
+   "meta.helm.sh/release-name": must be set to "vmo"; annotation validation error: missing key
+   "meta.helm.sh/release-namespace": must be set to "monitoring"
+   ```
+   _Reason_: The problem was incompatibility or conflict of CRD and resource versions  
+   _Solution_: Try to run [Script For Deleting CRDs](https://docs.percona.com/everest/uninstall/uninstallEverest.html#remove-all-the-crds)
+   and rerun helm install command above
+
 ### Create VMSingle instance
 ```shell
 kubectl apply -n monitoring -f - <<EOF
@@ -382,7 +413,8 @@ helm upgrade --install opensearch-service \
   -f charts/helm/opensearch-service/example.yaml
 ```
 
-Install the logging operator. If opensearch is built according to the instructions above, then replacing 
+### Install the logging operator. 
+If opensearch is built according to the instructions above, then replacing 
 graylog.elasticsearchHost is not required. Here is an example of a helm command to install logging-operator with 
 **fluentbit**:
 
