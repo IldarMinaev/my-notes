@@ -38,7 +38,7 @@ curl -s https://raw.githubusercontent.com/prometheus-operator/prometheus-operato
 ```
 Install CRDs for grafana dashboards
 ```shell
-TODO TBD
+curl -s https://raw.githubusercontent.com/Netcracker/qubership-monitoring-operator/refs/heads/main/charts/qubership-monitoring-operator/charts/grafana-operator/crds/integreatly.org_grafanadashboards.yaml | kubectl apply -f -
 ```
 ### Deploy the K8ssandraCluster
 ```shell
