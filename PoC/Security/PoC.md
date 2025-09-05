@@ -1064,5 +1064,5 @@ sleep 3600; kubectl get secrets -n test-apps app2-secret-from-store-app2-read -o
 Result:
 
 ```
-TODO add the result
+value2
 ```
