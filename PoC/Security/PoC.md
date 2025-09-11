@@ -309,7 +309,7 @@ kubectl get SecretStore -A
 ### Create Vault key/value
 
 ```shell
-PGUSER=$(kubectl get secrets -n postgres "postgres-credentials" -o go-template='{{.data.username | base64decode}}')
+PGUSER=$(kubectl get secrets -n postgres "postgres-credentials" -o go-template='{{.data.user | base64decode}}')
 PGPASSWORD=$(kubectl get secrets -n postgres "postgres-credentials" -o go-template='{{.data.password | base64decode}}')
 
 kubectl exec -ti -n vault vault-0 -- vault kv put \
@@ -602,6 +602,8 @@ Result:
 
 ### Push secrets
 
+Push secrets still in Alpha: https://external-secrets.io/latest/guides/pushsecrets/
+
 Test in separate NS
 ```shell
 kubectl create namespace test-apps
@@ -697,6 +699,9 @@ kubectl create clusterrolebinding vault-auth-test-apps \
   --serviceaccount=test-apps:vault-auth-app1-write \
   --serviceaccount=test-apps:vault-auth-app2-write
 ```
+
+Cluster role `system:auth-delegator` required because Vault validates the Kubernetes service account token using the Kubernetes TokenReview API. This API requires the service account to have permissions to request a token review, which is granted by binding the `system:auth-delegator` ClusterRole to the service account. Without this ClusterRole binding, the service account is not authorized to verify tokens via the TokenReview API, which causes the SecretStore authentication to fail.
+See: https://external-secrets.io/latest/provider/hashicorp-vault/
 
 Create SecretStores
 
@@ -1066,3 +1071,13 @@ Result:
 ```
 value2
 ```
+
+## Proof of concepts
+
+### Design
+
+TODO: Add design
+
+### POC Repo
+
+Currently POC repo located in private repository: <https://github.com/IldarMinaev/poc>. Contact Ildar Minaev to get access.
