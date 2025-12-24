@@ -79,7 +79,7 @@ helm upgrade external-secrets external-secrets/external-secrets \
 ### 1. Get repo
 
 ```shell
-git clone git@sharedgithub.com:Netcracker/pgskipper-operator.git
+git clone git@github.com:Netcracker/pgskipper-operator.git
 cd pgskipper-operator
 ```
 
