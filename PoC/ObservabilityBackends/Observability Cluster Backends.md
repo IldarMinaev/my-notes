@@ -68,222 +68,24 @@ spec:
 EOF
 ```
 # Back-ends
-## Grafana operated
-See [https://grafana.github.io/grafana-operator/docs/installation/helm/](https://grafana.github.io/grafana-operator/docs/installation/helm/)
-### Install with helm
+## Monitoring operator
+Clone repo:
 ```shell
-helm upgrade -i \
-  grafana-operator oci://ghcr.io/grafana/helm-charts/grafana-operator \
-  --namespace monitoring \
-  --create-namespace \
-  --version v5.16.0
+git clone git@github.com:Netcracker/qubership-monitoring-operator.git
+cd qubership-monitoring-operator
 ```
-
-#### Troubleshooting
-
-1) _Problem description_: docker-credential-secretservice: error while loading shared libraries: libsecret-1.so.0:
-   cannot open shared object file: No such file or directory  
-   _Solution_: run command
-   ```shell
-   sudo apt-get update
-   sudo apt-get install libsecret-1-0
-   ```
-2) _Problem description_: Error: error getting credentials - err: exec: "docker-credential-wincred.exe": executable file
-   not found in PATH, out: ``  
-   _Solution_: need to configure credential helper for Docker in Windows environment. Install docker-credential-wincred.exe then set the path to $PATH variable.
-   ```shell
-   echo 'export PATH=$PATH:"/mnt/c/Program Files/Rancher Desktop/resources/resources/win32/bin"' >> ~/.bashrc
-   source ~/.bashrc
-   ```
-### Create grafana instance
+Install with helm:
 ```shell
-kubectl apply -n monitoring -f - <<EOF
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: Grafana
-metadata:
-  name: k8s-grafana
-  labels:
-    dashboards: "grafana"
-spec:
-  config:
-    security:
-      admin_user: root
-      admin_password: secret
-    log:
-      mode: "console"
-      level: "error"
-  ingress:
-    spec:
-      ingressClassName: traefik
-      rules:
-        - host: grafana-monitoring.localhost.localdomain
-          http:
-            paths:
-              - backend:
-                  service:
-                    name: k8s-grafana-service
-                    port:
-                      number: 3000
-                path: /
-                pathType: Prefix
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDatasource
-metadata:
-  name: grafanadatasource-vmsingle
-spec:
-  instanceSelector:
-    matchLabels:
-      dashboards: "grafana"
-  datasource:
-    name: vmsingle
-    type: prometheus
-    access: proxy
-    url: http://vmsingle-k8s-vmsingle:8429
-    isDefault: true
-    jsonData:
-      "tlsSkipVerify": true
-      "timeInterval": "5s"
-EOF
-```
-TODO add creation of grafana https://github.com/grafana/grafana-operator/blob/master/examples/grafana_deployment/resources.yaml
-## Victoria-Metrics operator
-See [https://docs.victoriametrics.com/helm/victoriametrics-operator/index.html](https://docs.victoriametrics.com/helm/victoriametrics-operator/index.html)
-Add a chart helm repository
-```shell
-helm repo add vm https://victoriametrics.github.io/helm-charts/ --force-update
-```
-Install with helm
-```shell
-helm upgrade --install \
-  vmo vm/victoria-metrics-operator \
-  -n monitoring \
-  --create-namespace
-```
-#### Troubleshooting
-
-1) _Problem description_:
-   ```yaml
-   Error: Unable to continue with install: CustomResourceDefinition "vmauths.operator.victoriametrics.com" in namespace
-   "" exists and cannot be imported into the current release: invalid ownership metadata; label validation error:
-   missing key "app.kubernetes.io/managed-by": must be set to "Helm"; annotation validation error: missing key
-   "meta.helm.sh/release-name": must be set to "vmo"; annotation validation error: missing key
-   "meta.helm.sh/release-namespace": must be set to "monitoring"
-   ```
-   _Reason_: The problem was incompatibility or conflict of CRD and resource versions  
-   _Solution_: Try to run [Script For Deleting CRDs](https://docs.percona.com/everest/uninstall/uninstallEverest.html#remove-all-the-crds)
-   and rerun helm install command above
-
-### Create VMSingle instance
-```shell
-kubectl apply -n monitoring -f - <<EOF
-apiVersion: operator.victoriametrics.com/v1beta1
-kind: VMSingle
-metadata:
-  name: k8s-vmsingle
-spec:
-  retentionPeriod: 2d
-  resources:
-    requests:
-      memory: "64Mi"
-      cpu: "250m"
-    limits:
-      memory: "512Mi"
-      cpu: "1000m"
-  storage:
-    storageClassName: local-path
-    accessModes:
-      - ReadWriteOnce
-    resources:
-      requests:
-        storage: 10Gi
-  removePvcAfterDelete: true
-  extraArgs:
-    dedup.minScrapeInterval: 60s
-EOF
-```
-### Create ingress
-```shell
-kubectl create ingress k8s-vmsingle -n monitoring --class=traefik --rule="vmsingle-monitoring.localhost.localdomain/*=vmsingle-k8s-vmsingle:8429"
-```
-### Create VMAgent instance
-```shell
-kubectl apply -n monitoring -f - <<EOF
----
-apiVersion: operator.victoriametrics.com/v1beta1
-kind: VMAgent
-metadata:
-  name: sample
-spec:
-  selectAllByDefault: true
-  replicaCount: 1
-  resources:
-    requests:
-      cpu: "50m"
-      memory: "350Mi"
-    limits:
-      cpu: "500m"
-      memory: "850Mi"
-  extraArgs:
-    memory.allowedPercent: "40"
-  remoteWrite:
-  - url: "http://vmsingle-k8s-vmsingle.monitoring.svc.cluster.local:8429/api/v1/write"
-EOF
-```
-### Scrape Metrics Server
-```shell
-kubectl apply -n monitoring -f - <<EOF
----
-apiVersion: operator.victoriametrics.com/v1beta1
-kind: VMServiceScrape
-metadata:
-  name: metrics-server
-spec:
-  namespaceSelector:
-    matchNames:
-    - kube-system
-  selector:
-    matchLabels:
-      kubernetes.io/name: Metrics-server
-  endpoints:
-  - port: "443"
-    scheme: https
-    tlsConfig:
-      insecureSkipVerify: true
-      caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: view-metrics
-rules:
-- apiGroups:
-    - metrics.k8s.io
-  resources:
-    - pods
-    - nodes
-  verbs:
-    - get
-    - list
-    - watch
-- nonResourceURLs: ["/metrics"]
-  verbs: ["get"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: view-metrics
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: view-metrics
-subjects:
-  - apiGroup: rbac.authorization.k8s.io
-    kind: User
-    name: system:serviceaccount:vm:vmagent
-EOF
+helm upgrade --install -n monitoring --create-namespace qubership-monitoring-operator ./charts/qubership-monitoring-operator \
+  --set grafana.ingress.host=grafana.localhost.localdomain \
+  --set-string grafana.ingress.annotations."traefik\\.ingress\\.kubernetes\\.io/router\\.tls"=true
+  --set grafana.security.admin_password=admin123 \
+  --set victoriametrics.vmAuth.ingress.host=vmauth.localhost.localdomain \
+  --set victoriametrics.vmAlertManager.ingress.host=vmalertmanager.localhost.localdomain \
+  --set victoriametrics.vmAlert.ingress.host=vmalert.localhost.localdomain \
+  --set integrationTests.install=false \
+  --set cloudEventsExporter.install=true \
+  --set versionExporter.install=true
 ```
 ## Jaeger
 See https://github.com/Netcracker/qubership-jaeger/
@@ -456,4 +258,222 @@ helm upgrade --install qubership-logging-operator \
   --set fluentd.graylogPort=12201 \
   --set cloudEventsReader.install=false \
   charts/qubership-logging-operator
+```
+## Opensource versions
+### Grafana operator
+See [https://grafana.github.io/grafana-operator/docs/installation/helm/](https://grafana.github.io/grafana-operator/docs/installation/helm/)
+#### Install with helm
+```shell
+helm upgrade -i \
+  grafana-operator oci://ghcr.io/grafana/helm-charts/grafana-operator \
+  --namespace monitoring \
+  --create-namespace \
+  --version v5.16.0
+```
+
+##### Troubleshooting
+
+1) _Problem description_: docker-credential-secretservice: error while loading shared libraries: libsecret-1.so.0:
+   cannot open shared object file: No such file or directory  
+   _Solution_: run command
+   ```shell
+   sudo apt-get update
+   sudo apt-get install libsecret-1-0
+   ```
+2) _Problem description_: Error: error getting credentials - err: exec: "docker-credential-wincred.exe": executable file
+   not found in PATH, out: ``  
+   _Solution_: need to configure credential helper for Docker in Windows environment. Install docker-credential-wincred.exe then set the path to $PATH variable.
+   ```shell
+   echo 'export PATH=$PATH:"/mnt/c/Program Files/Rancher Desktop/resources/resources/win32/bin"' >> ~/.bashrc
+   source ~/.bashrc
+   ```
+#### Create grafana instance
+```shell
+kubectl apply -n monitoring -f - <<EOF
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: k8s-grafana
+  labels:
+    dashboards: "grafana"
+spec:
+  config:
+    security:
+      admin_user: root
+      admin_password: secret
+    log:
+      mode: "console"
+      level: "error"
+  ingress:
+    spec:
+      ingressClassName: traefik
+      rules:
+        - host: grafana-monitoring.localhost.localdomain
+          http:
+            paths:
+              - backend:
+                  service:
+                    name: k8s-grafana-service
+                    port:
+                      number: 3000
+                path: /
+                pathType: Prefix
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: grafanadatasource-vmsingle
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  datasource:
+    name: vmsingle
+    type: prometheus
+    access: proxy
+    url: http://vmsingle-k8s-vmsingle:8429
+    isDefault: true
+    jsonData:
+      "tlsSkipVerify": true
+      "timeInterval": "5s"
+EOF
+```
+TODO add creation of grafana https://github.com/grafana/grafana-operator/blob/master/examples/grafana_deployment/resources.yaml
+### Victoria-Metrics operator
+See [https://docs.victoriametrics.com/helm/victoriametrics-operator/index.html](https://docs.victoriametrics.com/helm/victoriametrics-operator/index.html)
+Add a chart helm repository
+```shell
+helm repo add vm https://victoriametrics.github.io/helm-charts/ --force-update
+```
+Install with helm
+```shell
+helm upgrade --install \
+  vmo vm/victoria-metrics-operator \
+  -n monitoring \
+  --create-namespace
+```
+#### Troubleshooting
+
+1) _Problem description_:
+   ```yaml
+   Error: Unable to continue with install: CustomResourceDefinition "vmauths.operator.victoriametrics.com" in namespace
+   "" exists and cannot be imported into the current release: invalid ownership metadata; label validation error:
+   missing key "app.kubernetes.io/managed-by": must be set to "Helm"; annotation validation error: missing key
+   "meta.helm.sh/release-name": must be set to "vmo"; annotation validation error: missing key
+   "meta.helm.sh/release-namespace": must be set to "monitoring"
+   ```
+   _Reason_: The problem was incompatibility or conflict of CRD and resource versions  
+   _Solution_: Try to run [Script For Deleting CRDs](https://docs.percona.com/everest/uninstall/uninstallEverest.html#remove-all-the-crds)
+   and rerun helm install command above
+
+#### Create VMSingle instance
+```shell
+kubectl apply -n monitoring -f - <<EOF
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMSingle
+metadata:
+  name: k8s-vmsingle
+spec:
+  retentionPeriod: 2d
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "1000m"
+  storage:
+    storageClassName: local-path
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+  removePvcAfterDelete: true
+  extraArgs:
+    dedup.minScrapeInterval: 60s
+EOF
+```
+#### Create ingress
+```shell
+kubectl create ingress k8s-vmsingle -n monitoring --class=traefik --rule="vmsingle-monitoring.localhost.localdomain/*=vmsingle-k8s-vmsingle:8429"
+```
+#### Create VMAgent instance
+```shell
+kubectl apply -n monitoring -f - <<EOF
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAgent
+metadata:
+  name: sample
+spec:
+  selectAllByDefault: true
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "350Mi"
+    limits:
+      cpu: "500m"
+      memory: "850Mi"
+  extraArgs:
+    memory.allowedPercent: "40"
+  remoteWrite:
+  - url: "http://vmsingle-k8s-vmsingle.monitoring.svc.cluster.local:8429/api/v1/write"
+EOF
+```
+#### Scrape Metrics Server
+```shell
+kubectl apply -n monitoring -f - <<EOF
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: metrics-server
+spec:
+  namespaceSelector:
+    matchNames:
+    - kube-system
+  selector:
+    matchLabels:
+      kubernetes.io/name: Metrics-server
+  endpoints:
+  - port: "443"
+    scheme: https
+    tlsConfig:
+      insecureSkipVerify: true
+      caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: view-metrics
+rules:
+- apiGroups:
+    - metrics.k8s.io
+  resources:
+    - pods
+    - nodes
+  verbs:
+    - get
+    - list
+    - watch
+- nonResourceURLs: ["/metrics"]
+  verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: view-metrics
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view-metrics
+subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: system:serviceaccount:vm:vmagent
+EOF
 ```
